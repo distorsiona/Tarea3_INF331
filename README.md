@@ -38,3 +38,6 @@ idCompra, idCliente, monto, fecha (uctNow). Cada $100 de compra se agrega un pun
 | Platino| 3000 + | +100 % puntos |
 
 **Diseño general**
+![FIDELIDAD](https://github.com/user-attachments/assets/0b1e2af9-8b87-47d1-9b08-1ee37c0a51f9)
+
+Se compone de dos servicios principales (CLIENTES Y COMPRAS). Cada validación se hace en App.java conectado al servicio correspondiente.
