@@ -1,3 +1,8 @@
+com\fidelidad\db\Database.class
 com\fidelidad\modelo\NivelFidelidad.class
 com\fidelidad\modelo\Cliente.class
+com\fidelidad\servicio\CompraService$1.class
+com\fidelidad\servicio\CompraService.class
+com\fidelidad\servicio\ClienteService.class
 com\fidelidad\App.class
+com\fidelidad\modelo\Compra.class
