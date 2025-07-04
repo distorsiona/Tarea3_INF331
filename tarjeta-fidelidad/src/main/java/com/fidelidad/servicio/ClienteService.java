@@ -128,6 +128,7 @@ public class ClienteService {
                 System.out.println("No se pudo conectar a la base de datos.");
                 return clientes;
             }
+
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM clientes");
 
@@ -135,12 +136,11 @@ public class ClienteService {
                 Cliente cliente = new Cliente(
                     rs.getInt("id"),
                     rs.getString("nombre"),
-                    rs.getString("correo")
+                    rs.getString("correo"),
+                    rs.getInt("puntos"),
+                    NivelFidelidad.valueOf(rs.getString("nivel")),
+                    rs.getInt("streakDias")
                 );
-                // Si Cliente tiene setters para puntos, nivel y streakDias, agréguelos aquí
-                // cliente.setPuntos(rs.getInt("puntos"));
-                // cliente.setNivel(rs.getString("nivel"));
-                // cliente.setStreakDias(rs.getInt("streakDias"));
                 clientes.add(cliente);
             }
 
@@ -153,6 +153,7 @@ public class ClienteService {
 
         return clientes;
     }
+
 
     
 
@@ -186,18 +187,60 @@ public class ClienteService {
     }
 
     
-    public boolean eliminarCliente(int id) {
-        if (!clientes.containsKey(id)) {
-            System.out.println("Cliente no encontrado.");
+public boolean eliminarCliente(int id) {
+    String sql = "DELETE FROM clientes WHERE id = ?";
+
+    try (Connection conn = Database.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, id);
+        int filasAfectadas = pstmt.executeUpdate();
+
+        if (filasAfectadas == 0) {
+            System.out.println("Cliente no encontrado en la base de datos.");
             return false;
         }
+
+        
         clientes.remove(id);
-        System.out.println("Cliente eliminado.");
+
+        System.out.println("Cliente eliminado correctamente.");
         return true;
+
+    } catch (SQLException e) {
+        System.out.println("Error al eliminar cliente: " + e.getMessage());
+        return false;
     }
+}
 
 
     public Cliente buscarCliente(int id) {
-        return clientes.get(id);
-    }
+        String sql = "SELECT * FROM clientes WHERE id = ?";
+
+        try (Connection conn = Database.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Cliente cliente = new Cliente(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("correo")
+                    );
+                    try {
+                        cliente.setPuntos(rs.getInt("puntos"));
+                        cliente.setStreakDias(rs.getInt("streakDias"));
+                    } catch (Exception ex) {
+                    }
+                    return cliente;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar cliente: " + e.getMessage());
+        }
+
+    return null; 
+}
+
 }
