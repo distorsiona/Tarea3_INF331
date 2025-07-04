@@ -21,10 +21,12 @@ Se incluye en las funcionalidades del sistema:
 - **Registrar** compras y otorgar los puntos según las reglas de negocio.
 - **Gestionar** niveles de fidelidad como BRONCE, PLATA, ORO y PLATINO.
 
-**Servicio Cliente**\\
+**Servicio Cliente**
+
 id, nombre, correo, puntos (0), nivel (BRONCE), streakDias (0) y el CRUD completo para este servicio. Se implementa la restricción de correo electrónico verificando un "@".
 
-**Servicio Compras**\\
+**Servicio Compras**
+
 idCompra, idCliente, monto, fecha (uctNow). Cada $100 de compra se agrega un punto al idCliente. Se tienen multiplicadores de puntos según el nivel del cliente. (Bronce x 1, Plata x 1.2 , Oro x 1.5, Platino x 2). Si el usuario hace 3 compras seguidas en un día, se suman +10 puntos. CRUD completo para compras.
 
 **Niveles de fidelidad**
