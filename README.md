@@ -10,8 +10,6 @@
 - TDD en la construcción del código y lógica.
   
 
-
-
 ---
 
 ## 1. Contexto:
@@ -38,6 +36,37 @@ idCompra, idCliente, monto, fecha (uctNow). Cada $100 de compra se agrega un pun
 | Platino| 3000 + | +100 % puntos |
 
 **Diseño general**
+
 ![FIDELIDAD](https://github.com/user-attachments/assets/0b1e2af9-8b87-47d1-9b08-1ee37c0a51f9)
 
 Se compone de dos servicios principales (CLIENTES Y COMPRAS). Cada validación se hace en App.java conectado al servicio correspondiente.
+
+## 2. Ejecución:
+
+Clone el repositorio en su procesador utilizando:
+```bash
+git clone https://github.com/distorsiona/Tarea3_INF331.git
+```
+
+Asegúrese de estar dentro de la carpeta que contiene la aplicación:
+```bash
+cd tarjeta-fidelidad
+```
+
+Para compilar el programa (única vez) ejecute:
+```bash
+mvn compile
+```
+
+Para correr el programa, ejecute:
+```bash
+mvn exec:java
+```
+Esto ejecutará el menú principal mediante consola.
+
+**Testing**
+
+Para ejecutar los tests:
+```bash
+mvn test
+```
