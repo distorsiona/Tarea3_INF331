@@ -1,6 +1,5 @@
 package com.fidelidad;
 
-import com.fidelidad.db.Database;
 import com.fidelidad.modelo.Cliente;
 import com.fidelidad.modelo.Compra;
 import com.fidelidad.servicio.ClienteService;
@@ -16,7 +15,6 @@ public class App {
     private static final CompraService compraService = new CompraService(clienteService);
 
     public static void main(String[] args) {
-        Database.inicializar();
         System.out.println("Sistema de Tarjeta de fidelidad...");
 
         int opcion;

@@ -8,7 +8,14 @@ public class Compra {
     private final double monto;
     private final LocalDate fecha;
 
-    public Compra(int idCompra, int idCliente, double monto, LocalDate fecha) {
+    public Compra(int idCompra, int idCliente, double monto) {
+        this.idCompra = idCompra;
+        this.idCliente = idCliente;
+        this.monto = monto;
+        fecha = LocalDate.now();
+    }
+
+        public Compra(int idCompra, int idCliente, double monto, LocalDate fecha) {
         this.idCompra = idCompra;
         this.idCliente = idCliente;
         this.monto = monto;
