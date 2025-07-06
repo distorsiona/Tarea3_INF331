@@ -24,6 +24,12 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.45.2.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -37,6 +43,13 @@
                     <mainClass>com.fidelidad.App</mainClass>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.11.0.3922</version>
+            </plugin>
+
 
             <!-- Plugin para ejecutar los tests con JUnit 5 -->
             <plugin>

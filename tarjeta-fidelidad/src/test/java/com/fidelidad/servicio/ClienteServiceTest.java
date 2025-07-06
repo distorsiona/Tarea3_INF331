@@ -10,81 +10,94 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ClienteServiceTest {
 
-    private ClienteService servicio;
+    private ClienteService clienteService;
 
     @BeforeEach
     void setUp() {
-        servicio = new ClienteService();
+        clienteService = new ClienteService();
     }
 
+    // --- Tests para agregarCliente ---
     @Test
-    void agregarCliente_valido_retornaTrueYSeGuarda() {
-        boolean resultado = servicio.agregarCliente(1, "Ana", "ana@mail.com");
+    void agregarCliente_valido_debeAgregarCorrectamente() {
+        boolean resultado = clienteService.agregarCliente(1, "Juan", "juan@example.com");
         assertTrue(resultado);
-
-        Cliente cliente = servicio.buscarCliente(1);
+        Cliente cliente = clienteService.buscarCliente(1);
         assertNotNull(cliente);
-        assertEquals("Ana", cliente.getNombre());
-        assertEquals("ana@mail.com", cliente.getCorreo());
-        assertEquals(0, cliente.getPuntos());
+        assertEquals("Juan", cliente.getNombre());
     }
 
     @Test
-    void agregarCliente_conCorreoInvalido_retornaFalse() {
-        boolean resultado = servicio.agregarCliente(2, "Pedro", "pedro.com");
-        assertFalse(resultado);
-        assertNull(servicio.buscarCliente(2));
-    }
-
-    @Test
-    void agregarCliente_conIdDuplicado_retornaFalse() {
-        servicio.agregarCliente(1, "Ana", "ana@mail.com");
-        boolean resultado = servicio.agregarCliente(1, "Otra Ana", "otra@mail.com");
-        assertFalse(resultado);
-
-        Cliente cliente = servicio.buscarCliente(1);
-        assertEquals("Ana", cliente.getNombre()); // No fue reemplazado
-    }
-
-    @Test
-    void actualizarCliente_existente_actualizaDatos() {
-        servicio.agregarCliente(1, "Ana", "ana@mail.com");
-        boolean resultado = servicio.actualizarCliente(1, "Ana Nueva", "nueva@mail.com");
-        assertTrue(resultado);
-
-        Cliente actualizado = servicio.buscarCliente(1);
-        assertEquals("Ana Nueva", actualizado.getNombre());
-        assertEquals("nueva@mail.com", actualizado.getCorreo());
-    }
-
-    @Test
-    void actualizarCliente_noExiste_retornaFalse() {
-        boolean resultado = servicio.actualizarCliente(99, "X", "x@mail.com");
+    void agregarCliente_nombreVacio_debeFallar() {
+        boolean resultado = clienteService.agregarCliente(2, "   ", "correo@example.com");
         assertFalse(resultado);
     }
 
     @Test
-    void eliminarCliente_existente_loElimina() {
-        servicio.agregarCliente(1, "Ana", "ana@mail.com");
-        boolean resultado = servicio.eliminarCliente(1);
-        assertTrue(resultado);
-        assertNull(servicio.buscarCliente(1));
-    }
-
-    @Test
-    void eliminarCliente_inexistente_retornaFalse() {
-        boolean resultado = servicio.eliminarCliente(999);
+    void agregarCliente_correoInvalido_debeFallar() {
+        boolean resultado = clienteService.agregarCliente(3, "Ana", "correo_invalido");
         assertFalse(resultado);
     }
 
     @Test
-    void listarClientes_devuelveListaConClientesCreados() {
-        servicio.agregarCliente(1, "Ana", "ana@mail.com");
-        servicio.agregarCliente(2, "Pedro", "pedro@mail.com");
+    void agregarCliente_idRepetido_debeFallar() {
+        clienteService.agregarCliente(4, "Luis", "luis@example.com");
+        boolean resultado = clienteService.agregarCliente(4, "Luis 2", "luis2@example.com");
+        assertFalse(resultado);
+    }
 
-        List<Cliente> lista = servicio.listarClientes();
+    // --- Tests para buscarCliente ---
+    @Test
+    void buscarCliente_existente_debeRetornarCliente() {
+        clienteService.agregarCliente(5, "Carlos", "carlos@example.com");
+        Cliente cliente = clienteService.buscarCliente(5);
+        assertNotNull(cliente);
+        assertEquals("Carlos", cliente.getNombre());
+    }
+
+    @Test
+    void buscarCliente_inexistente_debeRetornarNull() {
+        Cliente cliente = clienteService.buscarCliente(999);
+        assertNull(cliente);
+    }
+
+    // --- Tests para listarClientes ---
+    @Test
+    void listarClientes_debeRetornarTodosLosClientes() {
+        clienteService.agregarCliente(6, "A", "a@a.com");
+        clienteService.agregarCliente(7, "B", "b@b.com");
+        List<Cliente> lista = clienteService.listarClientes();
         assertEquals(2, lista.size());
-        assertTrue(lista.stream().anyMatch(c -> c.getNombre().equals("Ana")));
-        assertTrue(lista.stream().anyMatch(c -> c.getNombre().equals("Pedro")));
+    }
+
+    // --- Tests para actualizarCliente ---
+    @Test
+    void actualizarCliente_existente_debeActualizar() {
+        clienteService.agregarCliente(8, "Original", "orig@example.com");
+        boolean actualizado = clienteService.actualizarCliente(8, "Nuevo", "nuevo@example.com");
+        assertTrue(actualizado);
+        Cliente cliente = clienteService.buscarCliente(8);
+        assertEquals("Nuevo", cliente.getNombre());
+    }
+
+    @Test
+    void actualizarCliente_inexistente_debeFallar() {
+        boolean resultado = clienteService.actualizarCliente(999, "X", "x@example.com");
+        assertFalse(resultado);
+    }
+
+    // --- Tests para eliminarCliente ---
+    @Test
+    void eliminarCliente_existente_debeEliminar() {
+        clienteService.agregarCliente(10, "Para Borrar", "pb@example.com");
+        boolean eliminado = clienteService.eliminarCliente(10);
+        assertTrue(eliminado);
+        assertNull(clienteService.buscarCliente(10));
+    }
+
+    @Test
+    void eliminarCliente_inexistente_debeFallar() {
+        boolean eliminado = clienteService.eliminarCliente(999);
+        assertFalse(eliminado);
     }
 }

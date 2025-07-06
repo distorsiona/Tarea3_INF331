@@ -17,6 +17,16 @@ public class Cliente {
         this.streakDias = 0;
     }
 
+    public Cliente(int id, String nombre, String correo, int puntos, NivelFidelidad nivel, int streakDias) {
+    this.id = id;
+    this.nombre = nombre;
+    this.correo = correo;
+    this.puntos = puntos;
+    this.nivel = nivel;
+    this.streakDias = streakDias;
+}
+
+
     //getters y Setters
 
     public int getId() { return id; }
