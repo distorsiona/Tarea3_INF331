@@ -44,6 +44,13 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.11.0.3922</version>
+            </plugin>
+
+
             <!-- Plugin para ejecutar los tests con JUnit 5 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

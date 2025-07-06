@@ -42,126 +42,178 @@ public class App {
     }
 
     private static void menuClientes() {
+    int opcion;
+    do {
         System.out.println("\n--- Gestión de Clientes ---");
         System.out.println("1. Agregar Cliente");
         System.out.println("2. Listar Clientes");
         System.out.println("3. Actualizar Cliente");
         System.out.println("4. Eliminar Cliente");
+        System.out.println("5. Ver Compras de Cliente");
+        System.out.println("6. Eliminar Compra de Cliente");
+        System.out.println("7. Volver al Menú Principal");
 
-        int opcion = leerInt("Seleccione una opción: ");
+        opcion = leerInt("Seleccione una opción: ");
         switch (opcion) {
-        case 1 -> {
-            System.out.println("\n--- Agregar Cliente ---");
+            case 1 -> {
+                System.out.println("\n--- Agregar Cliente ---");
 
-            //pedir el id para asociar al cliente
-            final int[] idHolder = new int[1];
-            while (true) {
-                idHolder[0] = leerInt("ID (0 para cancelar): ");
-                if (idHolder[0] == 0) {
+                final int[] idHolder = new int[1];
+                while (true) {
+                    idHolder[0] = leerInt("ID (0 para cancelar): ");
+                    if (idHolder[0] == 0) {
+                        System.out.println("Registro cancelado.");
+                        break;
+                    }
+                    final int idFinal = idHolder[0];
+                    if (clienteService.listarClientes().stream().anyMatch(c -> c.getId() == idFinal)) {
+                        System.out.println("Ya existe un cliente con ese ID. Intente con otro o escriba 0 para cancelar.");
+                    } else {
+                        break;
+                    }
+                }
+                if (idHolder[0] == 0) break;
+
+                String nombre = leerTexto("Nombre (0 para cancelar): ");
+                if (nombre.equals("0")) {
                     System.out.println("Registro cancelado.");
                     break;
                 }
-                final int idFinal = idHolder[0];
-                if (clienteService.listarClientes().stream().anyMatch(c -> c.getId() == idFinal)) {
-                    System.out.println("Ya existe un cliente con ese ID. Intente con otro o escriba 0 para cancelar.");
-                } else {
-                    break;
+
+                String correo;
+                while (true) {
+                    correo = leerTexto("Correo electrónico (0 para cancelar): ");
+                    if (correo.equals("0")) {
+                        System.out.println("Registro cancelado.");
+                        break;
+                    }
+                    if (correoValido(correo)) {
+                        break;
+                    } else {
+                        System.out.println("Formato de correo inválido. Intente nuevamente o escriba 0 para cancelar.");
+                    }
+                }
+                if (correo.equals("0")) break;
+
+                boolean agregado = clienteService.agregarCliente(idHolder[0], nombre, correo);
+                if (!agregado) {
+                    System.out.println("No se pudo agregar el cliente. Verifique los datos.");
                 }
             }
-            if (idHolder[0] == 0) break;
-
-            //pedir nombre del usuario
-            String nombre = leerTexto("Nombre (0 para cancelar): ");
-            if (nombre.equals("0")) {
-                System.out.println("Registro cancelado.");
-                break;
-            }
-
-            //pedir correo con la respectiva validación
-            String correo;
-            while (true) {
-                correo = leerTexto("Correo electrónico (0 para cancelar): ");
-                if (correo.equals("0")) {
-                    System.out.println("Registro cancelado.");
-                    break;
-                }
-                if (correoValido(correo)) {
-                    break;
-                } else {
-                    System.out.println("Formato de correo inválido. Intente nuevamente o escriba 0 para cancelar.");
-                }
-            }
-
-            if (correo.equals("0")) break;
-
-            boolean agregado = clienteService.agregarCliente(idHolder[0], nombre, correo);
-            if (agregado) {
-                System.out.println("Cliente agregado correctamente.");
-            } else {
-                System.out.println("No se pudo agregar el cliente. Verifique los datos.");
-            }
-            }
-
 
             case 2 -> clienteService.listarClientes().forEach(System.out::println);
+
             case 3 -> {
                 int id = leerInt("ID del cliente a actualizar: ");
                 System.out.print("Nuevo nombre: ");
                 String nuevoNombre = scanner.nextLine();
 
-                System.out.print("Nuevo: ");
+                System.out.print("Nuevo correo: ");
                 String nuevoCorreo = scanner.nextLine();
-                if (nuevoCorreo.isEmpty() ||  !nuevoCorreo.contains("@")) {
+                if (nuevoCorreo.isEmpty() || !nuevoCorreo.contains("@")) {
                     System.out.println("Correo inválido. No se actualizará.");
-                    return; //salir si el correo es inválido
+                    return;
                 }
 
-                System.out.println("Cliente actualizado con éxito.");
                 clienteService.actualizarCliente(id, nuevoNombre, nuevoCorreo);
+                System.out.println("Cliente actualizado con éxito.");
             }
+
             case 4 -> {
                 int id = leerInt("ID del cliente a eliminar: ");
                 System.out.println("¿Está seguro de eliminar al cliente con ID " + id + "? (S/N)");
                 String confirmacion = scanner.nextLine();
                 if (!confirmacion.equalsIgnoreCase("S")) {
                     System.out.println("Eliminación cancelada.");
-                    return; //salir si no se confirma
+                    return;
                 }
                 clienteService.eliminarCliente(id);
             }
-            default -> System.out.println("Opción inválida");
+
+            case 5 -> {
+                int idCliente = leerInt("Ingrese ID del cliente: ");
+                var compras = compraService.obtenerHistorialPorCliente(idCliente);
+                if (compras.isEmpty()) {
+                    System.out.println("Este cliente no tiene compras registradas.");
+                } else {
+                    System.out.println("--- Historial de Compras ---");
+                    compras.forEach(c ->
+                            System.out.println("ID: " + c.getIdCompra() + ", Monto: $" + c.getMonto() + ", Fecha: " + c.getFecha()));
+                }
+            }
+
+            case 6 -> {
+                int idCliente = leerInt("Ingrese ID del cliente: ");
+                var compras = compraService.obtenerHistorialPorCliente(idCliente);
+                if (compras.isEmpty()) {
+                    System.out.println("Este cliente no tiene compras registradas.");
+                    break;
+                }
+
+                compras.forEach(c ->
+                        System.out.println("ID: " + c.getIdCompra() + ", Monto: $" + c.getMonto() + ", Fecha: " + c.getFecha()));
+                int idCompra = leerInt("Ingrese ID de la compra que desea eliminar: ");
+                boolean eliminada = compras.removeIf(c -> c.getIdCompra() == idCompra);
+                if (eliminada) {
+                    System.out.println("Compra eliminada con éxito.");
+                } else {
+                    System.out.println("No se encontró una compra con ese ID.");
+                }
+            }
+
+            case 7 -> System.out.println("Volviendo al menú principal...");
+
+            default -> {
+                if (opcion != 7) System.out.println("Opción inválida.");
+            }
         }
-    }
+    } while (opcion != 7);
+}
 
     private static void registrarCompra() {
-    System.out.println("\n--- Registrar Compra ---");
-    int idCompra = leerInt("ID de la compra: ");
+        System.out.println("\n--- Registrar Compra ---");
+        int idCompra;
 
-    //se debe validar existencia del cliente con opción de reintentar o cancelar
-    Cliente cliente = null;
-    int idCliente = -1;
+        while (true) {
+            idCompra = leerInt("ID de la compra (0 para cancelar): ");
+            if (idCompra == 0) {
+                System.out.println("Registro cancelado.");
+                return;
+            }
 
-    while (cliente == null) {
-        idCliente = leerInt("ID del cliente (0 para cancelar): ");
-
-        if (idCliente == 0) {
-            System.out.println("Registro cancelado.");
-            return; // sale del método registrarCompra
+            if (compraService.buscarCompraPorId(idCompra) != null) {
+                System.out.println("Ya existe una compra con ese ID. Intente con otro.");
+            } else {
+                break; // ID válido y único, salimos del bucle
+            }
         }
 
-        cliente = clienteService.buscarCliente(idCliente);
-        if (cliente == null) {
-            System.out.println("Cliente no encontrado. Intente con otro ID o 0 para cancelar.");
+        // Validación de cliente existente
+        Cliente cliente = null;
+        int idCliente = -1;
+
+        while (cliente == null) {
+            idCliente = leerInt("ID del cliente (0 para cancelar): ");
+            if (idCliente == 0) {
+                System.out.println("Registro cancelado.");
+                return;
+            }
+
+            cliente = clienteService.buscarCliente(idCliente);
+            if (cliente == null) {
+                System.out.println("Cliente no encontrado. Intente con otro ID o 0 para cancelar.");
+            }
+        }
+
+        double monto = leerDouble("Monto de la compra: ");
+        LocalDate fecha = LocalDate.now();
+
+        Compra compra = new Compra(idCompra, idCliente, monto, fecha);
+        compraService.registrarCompra(compra);
+
+        System.out.println("Compra registrada correctamente.");
     }
-}
 
-
-    double monto = leerDouble("Monto de la compra: ");
-    LocalDate fecha = LocalDate.now(); 
-
-    Compra compra = new Compra(idCompra, idCliente, monto, fecha);
-    compraService.registrarCompra(compra);
-}
 
 
     private static void mostrarPuntosYNivel() {
